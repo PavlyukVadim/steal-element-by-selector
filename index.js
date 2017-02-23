@@ -1,8 +1,9 @@
-'use strict';
+'reuse strict';
 
 const url = require('url');
-const http = require('http');
-const https = require('https');
+const httpsRequest = require('./app/httpsRequest');
+const httpRequest = require('./app/httpRequest');
+
 
 let href = 'https://www.google.com.ua';
 
@@ -15,40 +16,17 @@ function getCodeByHref (href) {
     path: urlObj.path,
     method: 'GET'
   };
-
-  if (urlObj.protocol === 'https:') {
-    httpsRequest(options);
+  let bodyRequest;
+  if (urlObj.protocol === 'https:') {  
+    bodyRequest = httpsRequest;
   } else if (urlObj.protocol === 'http:') {
-    httpRequest(options);
-  } 
+    bodyRequest = httpRequest;
+  }
   
+  bodyRequest(options)
+  .then((body) => console.log(body) )
+  .catch((reason) => console.log('Reason:', reason));
+   
 }
 
-getCodeByHref("https://www.google.com.ua");
-
-function httpRequest(options) {
-  var req = http.request(options, (res) => {
-    res.setEncoding('utf8');
-    res.on('data', (chunk) => {
-      console.log(`BODY: ${chunk}`);
-    });
-    res.on('end', () => {
-      console.log('No more data in response.');
-    });
-  });
-
-  req.end();
-}
-
-function httpsRequest(options) {
-  var req = https.request(options, (res) => {
-    res.on('data', (d) => {
-      process.stdout.write(d);
-    });
-  });
-
-  req.on('error', (e) => {
-    console.error(e);
-  });
-  req.end();
-}
+getCodeByHref(href);
