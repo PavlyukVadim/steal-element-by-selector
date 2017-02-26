@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/PavlyukVadim/stealElementBySelector/issues"
   },
-  "homepage": "https://github.com/PavlyukVadim/stealElementBySelector#readme"
+  "homepage": "https://github.com/PavlyukVadim/stealElementBySelector#readme",
+  "dependencies": {
+    "cheerio": "^0.22.0"
+  }
 }
