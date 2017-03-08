@@ -70,13 +70,25 @@ function getCssByHref (href, selector) {
 getCssByHref(cssHref, selector);
 
 
-function parseCss(body, selector) {
+function parseCss(body, basicSelector) {
   
-  let regexp = new RegExp(selector, 'gi');
+  let regexp = new RegExp(basicSelector, 'gi');
   let result;
 
   while (result = regexp.exec(body)) {
-    console.log( 'Найдено: ' + result[0] + ' на позиции:' + result.index );
-    console.log(body.slice(result.index, regexp.lastIndex))
+
+    let indexOfBracket = body.lastIndexOf('}', result.index) + 1;
+    let indexOfСomma = body.lastIndexOf(',', result.index) + 1; 
+    let startIndexOfSelector = indexOfBracket > indexOfСomma ? indexOfBracket : indexOfСomma;
+    let lastIndexOfSelector = regexp.lastIndex;
+
+    let selector = body.slice(startIndexOfSelector, lastIndexOfSelector).trim();
+
+    let startIndexOfStyles = body.indexOf('{', regexp.lastIndex);
+    let lastIndexOfStyles = body.indexOf('}', regexp.lastIndex) + 1;
+
+    let styles = body.slice(startIndexOfStyles, lastIndexOfStyles);
+   
+    console.log(selector, styles);
   }
 }
