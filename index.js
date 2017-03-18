@@ -10,7 +10,27 @@ const selector = 'img';
 
 
 
-function getCssLinks(siteLink) {
+function getElementsBySelector(siteLink, selector) {
+  const options = {
+    uri: siteLink,
+    transform: function (body) {
+      return cheerio.load(body);
+    }
+  };
+  return new Promise( function( resolve, reject ) {
+    requestPromise(options)
+      .then(($) => {
+          let element = $(selector)
+          console.log(element);
+      })
+      .catch((reason) => console.log('Reason:', reason));
+  })
+}
+
+getElementsBySelector(siteLink, '#order-5');
+
+
+function getArrayOfCssLinks(siteLink) {
   const options = {
     uri: siteLink,
     transform: function (body) {
@@ -32,7 +52,7 @@ function getCssLinks(siteLink) {
 
 function getStyleFromSite(siteLink) {
   Promise.resolve()
-    .then(() => getCssLinks(siteLink))
+    .then(() => getArrayOfCssLinks(siteLink))
     .then((links) => linksValidation(siteLink, links))
     //.then((links) => console.log(links))
     .then((links) => getStylesByLink(cssHref, 'img'))
@@ -82,4 +102,4 @@ function parseCss(body, basicSelector) {
   }
 }
 
-getStyleFromSite(siteLink);
+//getStyleFromSite(siteLink);
