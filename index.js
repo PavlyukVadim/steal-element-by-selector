@@ -4,7 +4,7 @@ const url = require('url');
 const cheerio = require('cheerio');
 const requestPromise = require('request-promise');
 
-const href = 'https://luxoptica.ua/';
+const siteLink = 'http://966402.sqdev.web.hosting-test.net/';
 const cssHref = 'http://sqdev.cc/node_modules/bulma/css/bulma.css';
 const selector = 'img';
 
@@ -17,20 +17,39 @@ function getCssLinks(siteLink) {
       return cheerio.load(body);
     }
   };
-  
-  requestPromise(options)
-    .then(($) => {
-        let cssLinks = $('link').toArray()
-          .filter(link => link.attribs.type === 'text/css')
-          .map(link => link.attribs.href);
-          console.log( cssLinks );
-        return cssLinks;  
-    })
-    .catch((reason) => console.log('Reason:', reason));  
+  return new Promise( function( resolve, reject ) {
+    requestPromise(options)
+      .then(($) => {
+          let cssLinks = $('link').toArray()
+            //.filter(link => link.attribs.type === 'text/css')
+            .map(link => link.attribs.href);
+          resolve(cssLinks); 
+      })
+      .catch((reason) => console.log('Reason:', reason));
+  }) 
 }
-getCssLinks(href);
 
-function getCssByHref (cssLink, selector) {
+
+function getStyleFromSite(siteLink) {
+  Promise.resolve()
+    .then(() => getCssLinks(siteLink))
+    .then((links) => linksValidation(siteLink, links))
+    //.then((links) => console.log(links))
+    .then((links) => getStylesByLink(links[4], 'img'))
+
+  
+}
+
+
+function linksValidation(siteLink, links) {
+  return links.map((link) => {
+    if (!link.includes('http')) return siteLink + link;
+    return link; 
+  });
+}
+
+
+function getStylesByLink(cssLink, selector) {
   const options = {
     uri: cssLink
   }
@@ -41,11 +60,9 @@ function getCssByHref (cssLink, selector) {
     .catch((reason) => console.log('Reason:', reason));
 }
 
-getCssByHref(cssHref, selector);
-
 
 function parseCss(body, basicSelector) {
-  
+  console.log(body);
   let regexp = new RegExp(`[,s]*${basicSelector} [wsd.#,-]*{`, 'gi');
   let result;
 
@@ -66,3 +83,5 @@ function parseCss(body, basicSelector) {
     console.log(selector, styles);
   }
 }
+
+getStyleFromSite(siteLink);
