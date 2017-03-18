@@ -6,35 +6,28 @@ const httpRequest = require('./app/httpRequest');
 const cheerio = require('cheerio');
 
 
-let href = 'https://luxoptica.ua/';
-let cssHref = 'http://sqdev.cc/node_modules/bulma/css/bulma.css';
-let selector = 'img';
+const href = 'https://luxoptica.ua/';
+const cssHref = 'http://sqdev.cc/node_modules/bulma/css/bulma.css';
+const selector = 'img';
+const requestPromise = require('request-promise');
 
-function getCodeByHref (href) {
 
-  let urlObj = url.parse(href);
-  let options = {
-    hostname: urlObj.hostname,
-    port: 443,
-    path: urlObj.path,
-    method: 'GET'
+function request() {
+  var options = {
+    uri: 'https://luxoptica.ua/',
+    transform: function (body) {
+        return cheerio.load(body);
+    }
   };
-  let bodyRequest;
-  let $;
-  if (urlObj.protocol === 'https:') {  
-    bodyRequest = httpsRequest;
-  } else if (urlObj.protocol === 'http:') {
-    bodyRequest = httpRequest;
-  }
-  
-  bodyRequest(options)
-  .then((body) => $ = cheerio.load(body))
-  .then(($) => findHrefs($))
-  .catch((reason) => console.log('Reason:', reason));
-   
+ 
+  requestPromise(options)
+    .then(($) => findHrefs($))
+    .catch((reason) => console.log('Reason:', reason));
 }
 
-//getCodeByHref(href);
+request();
+
+
 
 function findHrefs($) {
   let cssLinks = $('link').toArray()
@@ -67,12 +60,12 @@ function getCssByHref (href, selector) {
   .catch((reason) => console.log('Reason:', reason));
 }
 
-getCssByHref(cssHref, selector);
+//getCssByHref(cssHref, selector);
 
 
 function parseCss(body, basicSelector) {
   
-  let regexp = new RegExp(basicSelector, 'gi');
+  let regexp = new RegExp(`[,s]*${basicSelector} [wsd.#,-]*{`, 'gi');
   let result;
 
   while (result = regexp.exec(body)) {
