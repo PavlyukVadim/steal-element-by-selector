@@ -35,9 +35,9 @@ function getStyleFromSite(siteLink) {
     .then(() => getCssLinks(siteLink))
     .then((links) => linksValidation(siteLink, links))
     //.then((links) => console.log(links))
-    .then((links) => getStylesByLink(links[4], 'img'))
+    .then((links) => getStylesByLink(cssHref, 'img'))
 
-  
+
 }
 
 
@@ -62,20 +62,18 @@ function getStylesByLink(cssLink, selector) {
 
 
 function parseCss(body, basicSelector) {
-  console.log(body);
-  let regexp = new RegExp(`[,s]*${basicSelector} [wsd.#,-]*{`, 'gi');
+  let regexp = new RegExp(`([\n ,s])+${basicSelector}[ wsd.#,-]*[{,]{1}`, 'gi');
   let result;
 
   while (result = regexp.exec(body)) {
-
     let indexOfBracket = body.lastIndexOf('}', result.index) + 1;
     let indexOfСomma = body.lastIndexOf(',', result.index) + 1; 
     let startIndexOfSelector = indexOfBracket > indexOfСomma ? indexOfBracket : indexOfСomma;
     let lastIndexOfSelector = regexp.lastIndex;
 
-    let selector = body.slice(startIndexOfSelector, lastIndexOfSelector).trim();
+    let selector = body.slice(startIndexOfSelector, lastIndexOfSelector - 1).trim();
 
-    let startIndexOfStyles = body.indexOf('{', regexp.lastIndex);
+    let startIndexOfStyles = body.indexOf('{', regexp.lastIndex - 1);
     let lastIndexOfStyles = body.indexOf('}', regexp.lastIndex) + 1;
 
     let styles = body.slice(startIndexOfStyles, lastIndexOfStyles);
