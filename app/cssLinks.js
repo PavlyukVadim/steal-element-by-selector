@@ -7,26 +7,24 @@ const cheerio = require('cheerio');
 function getArrayOfCssLinks(siteLink) {
   const options = {
     uri: siteLink,
-    transform: function (body) {
-      return cheerio.load(body);
-    }
+    transform: (body) => cheerio.load(body)
   };
-  return new Promise( function( resolve, reject ) {
+  return new Promise((resolve, reject) => {
     requestPromise(options)
       .then(($) => {
-          let cssLinks = $('link').toArray()
-            .map(link => link.attribs.href)
-          resolve(linksValidation(siteLink, cssLinks)); 
+        const cssLinks = $('link').toArray()
+          .map(link => link.attribs.href);
+        resolve(linksValidation(siteLink, cssLinks));
       })
       .catch((reason) => console.log('Reason:', reason));
-  }) 
+  });
 }
 
 
 function linksValidation(siteLink, links) {
   return links.map((link) => {
     if (!link.includes('http')) return siteLink + link;
-    return link; 
+    return link;
   });
 }
 
