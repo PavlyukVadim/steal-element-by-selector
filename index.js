@@ -17,17 +17,26 @@ function getElementsBySelector(siteLink, selector) {
       return cheerio.load(body);
     }
   };
+  let selectors = [];
   return new Promise( function( resolve, reject ) {
     requestPromise(options)
       .then(($) => {
           let element = $(selector)
+          selectors.push(element[0].name)
+          if (element[0].attribs.id) {
+            selectors.push(`#${element[0].attribs.id}`)
+          }
+          if (element[0].attribs.class) {
+            selectors = selectors.concat(element[0].attribs.class.split(' ').map((className) => `.${className}`));
+          }
           console.log(element);
+          console.log(selectors);
       })
       .catch((reason) => console.log('Reason:', reason));
   })
 }
 
-getElementsBySelector(siteLink, '#order-5');
+getElementsBySelector(siteLink, '#slider-2');
 
 
 function getArrayOfCssLinks(siteLink) {
