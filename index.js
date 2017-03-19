@@ -17,26 +17,41 @@ function getElementsBySelector(siteLink, selector) {
       return cheerio.load(body);
     }
   };
-  let selectors = [];
+  const arrayOfSelectors = [];
+  let uniqueArrayOfSelectors = [];
+
   return new Promise( function( resolve, reject ) {
     requestPromise(options)
       .then(($) => {
           let element = $(selector)
-          selectors.push(element[0].name)
-          if (element[0].attribs.id) {
-            selectors.push(`#${element[0].attribs.id}`)
-          }
-          if (element[0].attribs.class) {
-            selectors = selectors.concat(element[0].attribs.class.split(' ').map((className) => `.${className}`));
-          }
-          console.log(element);
-          console.log(selectors);
+          getChildElements(element[0], arrayOfSelectors);
+          uniqueArrayOfSelectors = arrayOfSelectors.filter((item, i, arr) => arr.indexOf(item) === i);
+          console.log(uniqueArrayOfSelectors);
       })
       .catch((reason) => console.log('Reason:', reason));
   })
 }
 
-getElementsBySelector(siteLink, '#slider-2');
+getElementsBySelector(siteLink, '#slider-2 .container .row div h2');
+//#slider-2 .container .row div h2
+
+function getSelectorsByElement(element, selectors) {
+  selectors.push(element.name)
+  if (element.attribs.id) {
+    selectors.push(`#${element.attribs.id}`)
+  }
+  if (element.attribs.class) {
+    selectors.push(...element.attribs.class.split(' ').map((className) => `.${className}`));
+  }
+}
+
+
+function getChildElements(element, selectors) {
+  if (!element) return;
+  getSelectorsByElement(element, selectors)
+  let children = element.children.filter((element) => element.type === 'tag');
+  children.forEach((child) => getChildElements(child, selectors));
+}
 
 
 function getArrayOfCssLinks(siteLink) {
