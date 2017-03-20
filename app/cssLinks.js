@@ -23,6 +23,7 @@ function getArrayOfCssLinks(siteLink) {
 
 function linksValidation(siteLink, links) {
   return links.map((link) => {
+    link = link.replace(/\.\.\//g, '');
     if (!link.includes('http')) return siteLink + link;
     return link;
   });
