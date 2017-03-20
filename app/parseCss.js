@@ -19,7 +19,7 @@ function getCssByLink(cssLink, selector) {
 
 
 function parseCss(body, basicSelector) {
-  const regexp = new RegExp(`([\n ,s])+${basicSelector}[ wsd.#,-]*[{,]{1}`, 'gi');
+  const regexp = new RegExp(`([\n ,s])+${basicSelector}[ \.a-zA-Z:#\n\-]*[{,]{1}`, 'gi');
   let result;
   const arrayOfStyles = [];
 
@@ -33,6 +33,7 @@ function parseCss(body, basicSelector) {
     const lastIndexOfStyles = body.indexOf('}', regexp.lastIndex) + 1;
     const styles = body.slice(startIndexOfStyles, lastIndexOfStyles);
     arrayOfStyles.push(selector + ' ' + styles);
+    //console.log('selector: ', selector);
   }
   return arrayOfStyles;
 }
